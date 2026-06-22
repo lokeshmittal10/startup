@@ -1,4 +1,4 @@
-﻿window.OMNIMIND_LLM_CONFIG = {
+window.OMNIMIND_LLM_CONFIG = {
   provider: "Vertex AI",
   endpoint: "https://us-central1-aiplatform.googleapis.com/v1/projects/gen-lang-client-0963866277/locations/us-central1/publishers/google/models/gemini-2.5-flash:generateContent",
   authMethod: "serviceAccount",
