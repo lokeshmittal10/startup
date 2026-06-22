@@ -203,7 +203,7 @@ function setupSpeechHandlers() {
         chatInput.value = text;
       }
       addChatMessage("user", text);
-      handleUserInput(text);
+      handleUserInput(text, true);
       chatInput.value = "";
     };
 
@@ -398,7 +398,7 @@ function submitTextChat() {
   if (text === "") return;
 
   addChatMessage("user", text);
-  handleUserInput(text);
+  handleUserInput(text, false);
   chatInput.value = "";
 }
 
@@ -597,7 +597,7 @@ function getFormattedChatHistoryForGemini() {
 }
 
 // Intelligent Ingestion & Normalization Layer (NLP Google Gemini Integration v2.0)
-async function handleUserInput(text) {
+async function handleUserInput(text, isVoice = false) {
   const normalized = text.toLowerCase();
   let reply = "";
 
@@ -638,13 +638,13 @@ async function handleUserInput(text) {
 
       const successMsg = state.activeLanguage.startsWith("hi") ? `काम "${taskToDelete.title}" हटा दिया गया है।` : state.activeLanguage.startsWith("pa") ? `ਕੰਮ "${taskToDelete.title}" ਹਟਾ ਦਿੱਤਾ ਗਿਆ ਹੈ।` : `Task "${taskToDelete.title}" has been deleted.`;
       addChatMessage("bot", successMsg);
-      speakText(successMsg);
+      if (isVoice) speakText(successMsg);
       return;
     } else if (isNo || normalized.length > 0) {
       const cancelMsg = state.activeLanguage.startsWith("hi") ? "हटाना रद्द कर दिया गया है।" : state.activeLanguage.startsWith("pa") ? "ਹਟਾਉਣਾ ਰੱਦ ਕਰ ਦਿੱਤਾ ਗਿਆ ਹੈ।" : "Deletion cancelled.";
       state.pendingDeleteTask = null;
       addChatMessage("bot", cancelMsg);
-      speakText(cancelMsg);
+      if (isVoice) speakText(cancelMsg);
       return;
     }
   }
@@ -672,7 +672,7 @@ async function handleUserInput(text) {
         renderAll();
         const successMsg = `Priority for "${task.title}" updated to ${priorityVal}.`;
         addChatMessage("bot", successMsg);
-        speakText(successMsg);
+        if (isVoice) speakText(successMsg);
         return;
       }
     } else if (field === "mode_restrictions") {
@@ -695,7 +695,7 @@ async function handleUserInput(text) {
         renderAll();
         const successMsg = `Moved "${task.title}" to ${targetMode}.`;
         addChatMessage("bot", successMsg);
-        speakText(successMsg);
+        if (isVoice) speakText(successMsg);
         return;
       }
     }
@@ -890,7 +890,7 @@ Rules:
       renderAll();
 
       addChatMessage("bot", reply);
-      speakText(reply);
+      if (isVoice) speakText(reply);
       if (carplayWrapper && (carplayWrapper.classList.contains("listening") || carplayWrapper.classList.contains("speaking"))) {
         carplayPrompt.textContent = reply;
       }
@@ -899,12 +899,12 @@ Rules:
   } catch (err) {
     console.warn("Gemini API ingestion failed, falling back to local deterministic parsing:", err);
     addLog("Gemini API Offline/Error: " + err.message + ". Running local NLP fallback.", "warning");
-    handleUserInputLocalFallback(text);
+    handleUserInputLocalFallback(text, isVoice);
   }
 }
 
 // Local Fallback Parser when API is offline/unavailable
-function handleUserInputLocalFallback(text) {
+function handleUserInputLocalFallback(text, isVoice = false) {
   const normalized = text.toLowerCase();
   const cleanInput = normalized.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?]/g, "").trim();
   let reply = "";
@@ -923,7 +923,7 @@ function handleUserInputLocalFallback(text) {
     
     setTimeout(() => {
       addChatMessage("bot", reply);
-      speakText(reply);
+      if (isVoice) speakText(reply);
       if (carplayWrapper && (carplayWrapper.classList.contains("listening") || carplayWrapper.classList.contains("speaking"))) {
         carplayPrompt.textContent = reply;
       }
@@ -950,7 +950,7 @@ function handleUserInputLocalFallback(text) {
       reply = `I have switched your operational mode to ${targetMode}. Your view and notifications have been updated.`;
       setTimeout(() => {
         addChatMessage("bot", reply);
-        speakText(reply);
+        if (isVoice) speakText(reply);
       }, 500);
       return;
     }
@@ -1013,7 +1013,7 @@ function handleUserInputLocalFallback(text) {
 
       setTimeout(() => {
         addChatMessage("bot", reply);
-        speakText(reply);
+        if (isVoice) speakText(reply);
       }, 600);
       return;
     }
@@ -1135,7 +1135,7 @@ function handleUserInputLocalFallback(text) {
             ? `ਕੀ ਤੁਸੀਂ ਵਾਕਈ "${task.title}" ਨੂੰ ਹਟਾਉਣਾ ਚਾਹੁੰਦੇ ਹੋ?`
             : `Are you sure you want to delete "${task.title}"?`;
 
-        speakText(confirmMsg);
+        if (isVoice) speakText(confirmMsg);
         if (carplayPrompt) carplayPrompt.textContent = confirmMsg;
         addChatMessage("bot", confirmMsg);
         return;
@@ -1265,7 +1265,7 @@ function handleUserInputLocalFallback(text) {
 
   setTimeout(() => {
     addChatMessage("bot", reply);
-    speakText(reply);
+    if (isVoice) speakText(reply);
 
     if (carplayWrapper && (carplayWrapper.classList.contains("listening") || carplayWrapper.classList.contains("speaking"))) {
       carplayPrompt.textContent = reply;
