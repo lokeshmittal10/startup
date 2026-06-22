@@ -659,12 +659,19 @@ Rules:
     }
 
     const url = OMNIMIND_LLM_CONFIG.endpoint;
+    const headers = {
+      "Content-Type": "application/json"
+    };
+
+    if (OMNIMIND_LLM_CONFIG.provider === "Vertex AI" && OMNIMIND_LLM_CONFIG.authMethod === "bearer") {
+      headers["Authorization"] = `Bearer ${OMNIMIND_LLM_CONFIG.apiKey}`;
+    } else {
+      headers["X-goog-api-key"] = OMNIMIND_LLM_CONFIG.apiKey;
+    }
+
     const response = await fetch(url, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-goog-api-key": OMNIMIND_LLM_CONFIG.apiKey
-      },
+      headers: headers,
       body: JSON.stringify({
         contents: formattedHistory
       })
