@@ -36,6 +36,44 @@ let state = {
 };
 
 // State Utilities
+const API_BASE = window.location.origin;
+
+async function syncTasksFromServer() {
+  try {
+    const res = await fetch(`${API_BASE}/api/tasks`);
+    if (res.ok) {
+      const data = await res.json();
+      if (data) {
+        if (Array.isArray(data.brainIndex)) state.brainIndex = data.brainIndex;
+        if (Array.isArray(data.weekendTasks)) state.weekendTasks = data.weekendTasks;
+        if (Array.isArray(data.alerts)) state.alerts = data.alerts;
+        if (Array.isArray(data.tripChecklist)) state.tripChecklist = data.tripChecklist;
+        addLog("Synchronized brain database from GCE container backend server.", "success");
+        renderAll();
+      }
+    }
+  } catch (err) {
+    console.log("GCE backend API not reachable, running locally using localStorage fallback.", err.message);
+  }
+}
+
+async function syncTasksToServer() {
+  try {
+    await fetch(`${API_BASE}/api/tasks`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        brainIndex: state.brainIndex,
+        weekendTasks: state.weekendTasks,
+        alerts: state.alerts,
+        tripChecklist: state.tripChecklist
+      })
+    });
+  } catch (err) {
+    console.log("Failed to sync state to GCE backend server:", err.message);
+  }
+}
+
 function saveState() {
   localStorage.setItem("omnimind_index", JSON.stringify(state.brainIndex));
   localStorage.setItem("omnimind_alerts", JSON.stringify(state.alerts));
@@ -48,6 +86,7 @@ function saveState() {
   localStorage.setItem("omnimind_chathistory", JSON.stringify(state.chatHistory));
   updateStats();
   renderAnalytics();
+  syncTasksToServer();
 }
 
 // Speech Systems
@@ -104,10 +143,11 @@ document.addEventListener("DOMContentLoaded", () => {
   setupSightIngestion();
   setupModeControls();
 
-  // Lifecycle checks on launch
-  runLifecycleTracker();
-
-  renderAll();
+  // Load from GCE server first
+  syncTasksFromServer().then(() => {
+    runLifecycleTracker();
+    renderAll();
+  });
   updateGreeting();
 
   // Refresh Clock for CarPlay
@@ -748,9 +788,13 @@ You must respond with a strictly formatted minified JSON object only, matching t
 }
 
 Rules:
+- Recognize trilingual voice triggers for database actions:
+  * For CREATE, match English ("add", "remind"), Hindi ("लिख लो", "नया काम जोड़ो"), and Punjabi ("ਨਵਾਂ ਕੰਮ", "ਲਿਖ ਲਓ").
+  * For READ, match English ("what's on my list", "check agenda"), Hindi ("काम बताओ", "अजेंडा बताओ"), and Punjabi ("Agenda daso", "ਅਜੰਡਾ ਦੱਸੋ", "ਮੇਰੇ ਕੰਮ").
+  * For DELETE, match English ("delete", "remove"), Hindi ("हटाओ"), and Punjabi ("ਹਟਾ ਦਿਓ", "ਹਟਾਓ").
 - For UPDATE or DELETE, set "task.title" to a substring of the title of the task from the list above that best matches the user's request.
 - For CHAT: If the user searches for tasks, you can answer the query in the "reply" string.
-- Provide ONLY raw JSON. No markdown backticks, no comments.`;
+- Provide ONLY raw JSON. No markdown backticks (no ```json), no comments. Must be valid, parseable minified JSON.`;
 
     const formattedHistory = getFormattedChatHistoryForGemini();
 
@@ -1024,7 +1068,13 @@ function handleUserInputLocalFallback(text, isVoice = false) {
     normalized.includes("what is on my list") ||
     normalized.includes("agenda") ||
     normalized.includes("ਮੇਰੇ ਕੰਮ") ||
-    normalized.includes("काम बताओ");
+    normalized.includes("काम बताओ") ||
+    normalized.includes("agenda daso") ||
+    normalized.includes("ਅਜੰਡਾ ਦੱਸੋ") ||
+    normalized.includes("ਅਜੰਡਾ ਦਸੋ") ||
+    normalized.includes("agenda dso") ||
+    normalized.includes("अजेंडा बताओ") ||
+    normalized.includes("अजेंडा दसो");
 
   if (isRead) {
     runCarPlayBriefing();
@@ -1582,9 +1632,16 @@ function renderBrainIndex() {
         <button class="alert-action-btn" style="background: var(--accent-pink); border: none; align-self: flex-start; margin-top: 0; padding: 6px 14px; cursor: pointer;" onclick="createPainterTask()">Create Painter Task</button>
       </div>
     `;
+  } else if (searchQuery !== "" && filtered.length === 0) {
+    searchToAddHtml = `
+      <div class="index-item search-to-add-card" style="border: 1px dashed var(--accent-pink); background: rgba(255, 0, 127, 0.05); border-radius: 12px; padding: 16px; margin-bottom: 20px; display: flex; flex-direction: column; gap: 10px;">
+        <span style="font-size: 13px; color: var(--text-primary); font-weight: 500;">🔍 No results found matching "${escapeHtml(searchQuery)}". Would you like me to create a new task for it?</span>
+        <button class="alert-action-btn" style="background: var(--accent-pink); border: none; align-self: flex-start; margin-top: 0; padding: 6px 14px; cursor: pointer;" onclick="window.createTaskFromSearch('${escapeHtml(searchQuery)}')">Create Task</button>
+      </div>
+    `;
   }
 
-  if (filtered.length === 0 && !showSearchToAdd) {
+  if (filtered.length === 0 && !showSearchToAdd && searchQuery === "") {
     brainIndexList.innerHTML = `
       <div class="empty-state">
         <p>No knowledge items found matching your selection.</p>
@@ -2183,6 +2240,40 @@ function setupSightIngestion() {
   const dragZone = document.getElementById("image-drag-zone");
   const fileInput = document.getElementById("image-file-input");
 
+  // Handle chat-sight-btn dropdown toggle
+  const chatSightBtn = document.getElementById("chat-sight-btn");
+  const sightDropdownMenu = document.getElementById("sight-dropdown-menu");
+
+  if (chatSightBtn && sightDropdownMenu) {
+    chatSightBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const isVisible = sightDropdownMenu.style.display === "block";
+      sightDropdownMenu.style.display = isVisible ? "none" : "block";
+    });
+
+    // Close dropdown menu when clicking elsewhere
+    document.addEventListener("click", () => {
+      sightDropdownMenu.style.display = "none";
+    });
+
+    // Dropdown items click listeners
+    const dropdownItems = sightDropdownMenu.querySelectorAll(".sight-dropdown-item");
+    dropdownItems.forEach(item => {
+      item.addEventListener("click", (e) => {
+        e.stopPropagation();
+        sightDropdownMenu.style.display = "none";
+        const action = item.getAttribute("data-image");
+        if (action === "upload") {
+          fileInput.click();
+        } else {
+          // Switch to Feed Sync tab first to show the OCR scan animation
+          switchTab("sync");
+          runOcrScanner(action);
+        }
+      });
+    });
+  }
+
   if (imageTemplates) {
     imageTemplates.forEach(btn => {
       btn.addEventListener("click", () => {
@@ -2503,6 +2594,80 @@ window.createPainterTask = function () {
   speakText(botReply);
 };
 
+window.createTaskFromSearch = function(title) {
+  const meta = deduceCategoryAndTopic(title);
+  const newTask = createOmniItem({
+    type: "todo",
+    title: title,
+    content: `Automatically created from empty search query: "${title}".`,
+    category: meta.category,
+    topic: meta.topic,
+    item_priority: meta.item_priority,
+    category_priority: meta.category_priority,
+    mode_restrictions: meta.mode_restrictions
+  });
+
+  state.brainIndex.unshift(newTask);
+  state.weekendTasks.unshift(newTask);
+
+  const globalSearch = document.getElementById("global-search");
+  if (globalSearch) globalSearch.value = "";
+
+  saveState();
+  renderAll();
+
+  addLog(`Search-to-Add: Created task "${title}"`, "success");
+
+  const botReply = `I couldn't find any items matching "${title}", so I have created a new task and added it to your index under ${meta.category}.`;
+  addChatMessage("bot", botReply);
+  speakText(botReply);
+};
+
+function getCarpayTemplateMapping() {
+  const activeTasks = getActiveFilteredTasks().filter(t => !t.completed);
+  
+  const listItems = activeTasks.map(t => ({
+    _type: "CPListItem",
+    text: t.title,
+    detailText: `Category: ${t.category} | Priority: ${t.item_priority}`,
+    accessoryType: "disclosureIndicator",
+    userInfo: { taskId: t.id }
+  }));
+  
+  const listTemplate = {
+    _type: "CPListTemplate",
+    title: "Weekend Action List",
+    sections: [{
+      header: "Pending Tasks",
+      items: listItems
+    }]
+  };
+  
+  return {
+    listTemplate: listTemplate,
+    getDetailTemplate: (task) => {
+      if (!task) return null;
+      return {
+        _type: "CPInformationTemplate",
+        title: "Task Details",
+        layout: "twoColumn",
+        items: [
+          { title: "Title", detail: task.title },
+          { title: "Category", detail: task.category },
+          { title: "Topic", detail: task.topic || "General" },
+          { title: "Priority", detail: String(task.item_priority || 3) },
+          { title: "Due Date", detail: task.date_due || "N/A" },
+          { title: "Description", detail: task.content || "" }
+        ],
+        actions: [
+          { title: "Mark Completed", id: `complete-${task.id}` },
+          { title: "Delete Task", id: `delete-${task.id}` }
+        ]
+      };
+    }
+  };
+}
+
 window.createOmniItem = createOmniItem;
 window.updateActiveMode = updateActiveMode;
 window.runLifecycleTracker = runLifecycleTracker;
@@ -2512,3 +2677,4 @@ window.runOcrScanner = runOcrScanner;
 window.completeOcrSync = completeOcrSync;
 window.setupModeControls = setupModeControls;
 window.runCarPlayBriefing = runCarPlayBriefing;
+window.getCarpayTemplateMapping = getCarpayTemplateMapping;

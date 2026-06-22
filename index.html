@@ -259,10 +259,19 @@
             </div>
 
             <div class="chat-input-wrapper">
-              <!-- Custom Sight attachment button -->
-              <button class="mic-btn" id="chat-sight-btn" title="Ingest Sight media" style="margin-left: 6px; width: 34px; height: 34px; background: transparent; border: none; cursor: pointer; color: var(--text-secondary);" onclick="document.getElementById('image-file-input').click()">
-                📸
-              </button>
+              <!-- Custom Sight attachment button dropdown -->
+              <div class="sight-dropdown-container" style="position: relative; display: flex; align-items: center;">
+                <button class="mic-btn" id="chat-sight-btn" title="Ingest Sight media" style="margin-left: 6px; width: 34px; height: 34px; background: transparent; border: none; cursor: pointer; color: var(--text-secondary);">
+                  📸
+                </button>
+                <div class="sight-dropdown-menu" id="sight-dropdown-menu" style="display: none; position: absolute; bottom: 45px; left: 0; background: rgba(10, 8, 22, 0.95); border: 1px solid var(--panel-border); border-radius: 12px; padding: 6px; width: 180px; z-index: 100; box-shadow: 0 4px 20px rgba(0,0,0,0.5); backdrop-filter: blur(10px);">
+                  <button class="sight-dropdown-item" data-image="bill" style="display: flex; align-items: center; gap: 8px; width: 100%; padding: 8px 10px; background: transparent; border: none; color: #fff; text-align: left; font-size: 12.5px; cursor: pointer; border-radius: 6px; font-family: var(--font-family);">🧾 Ingest Energy Bill</button>
+                  <button class="sight-dropdown-item" data-image="wall" style="display: flex; align-items: center; gap: 8px; width: 100%; padding: 8px 10px; background: transparent; border: none; color: #fff; text-align: left; font-size: 12.5px; cursor: pointer; border-radius: 6px; font-family: var(--font-family);">🧱 Ingest Drywall Crack</button>
+                  <button class="sight-dropdown-item" data-image="flight" style="display: flex; align-items: center; gap: 8px; width: 100%; padding: 8px 10px; background: transparent; border: none; color: #fff; text-align: left; font-size: 12.5px; cursor: pointer; border-radius: 6px; font-family: var(--font-family);">✈️ Ingest Flight Ticket</button>
+                  <div style="border-top: 1px solid rgba(255,255,255,0.06); margin: 4px 0;"></div>
+                  <button class="sight-dropdown-item" data-image="upload" style="display: flex; align-items: center; gap: 8px; width: 100%; padding: 8px 10px; background: transparent; border: none; color: var(--text-secondary); text-align: left; font-size: 12.5px; cursor: pointer; border-radius: 6px; font-family: var(--font-family);">📁 Upload custom...</button>
+                </div>
+              </div>
               <input type="text" id="chat-input" placeholder="Ask anything, log complaints, or plan trips...">
               <button class="mic-btn" id="mic-trigger" title="Speak to Omni">
                 <svg viewBox="0 0 24 24"><path d="M12 14c1.66 0 2.99-1.34 2.99-3L15 5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.48 6-3.3 6-6.72h-1.7z" fill="currentColor"/></svg>

@@ -2,23 +2,25 @@
 
 :root {
   --bg-dark: #07050f;
-  --bg-gradient: linear-gradient(135deg, #0e0a1f 0%, #16102e 50%, #05030b 100%);
-  --panel-bg: rgba(22, 17, 43, 0.55);
-  --panel-border: rgba(255, 255, 255, 0.06);
-  --panel-border-glow: rgba(147, 51, 234, 0.3);
+  --bg-gradient: linear-gradient(135deg, #07050f 0%, #1a050e 60%, #030107 100%);
+  --panel-bg: rgba(253, 250, 242, 0.05); /* Glassmorphic Cream workspace surface */
+  --panel-border: rgba(253, 250, 242, 0.08);
+  --panel-border-glow: rgba(128, 0, 32, 0.35);
   
-  --primary: #9d4edd;
-  --primary-glow: rgba(157, 78, 221, 0.5);
-  --secondary: #3a86c8;
-  --secondary-glow: rgba(58, 134, 200, 0.5);
+  --primary: #800020; /* Maroon Accents */
+  --primary-glow: rgba(128, 0, 32, 0.55);
+  --secondary: #b5179e;
+  --secondary-glow: rgba(181, 23, 158, 0.5);
   
   --accent-cyan: #00f5d4;
   --accent-pink: #ff007f;
   --accent-yellow: #ffb703;
+  --accent-maroon: #800020;
+  --accent-cream: #fdfaf2;
   
-  --text-primary: #f3f0fc;
-  --text-secondary: #9a8fbd;
-  --text-muted: #645a87;
+  --text-primary: #fdfaf2; /* Cream Workspace Text */
+  --text-secondary: #ebdcb9; /* Warm Muted Cream */
+  --text-muted: #8d7e63;
   
   --font-family: 'Outfit', 'Plus Jakarta Sans', -apple-system, sans-serif;
   --sidebar-width: 280px;
@@ -751,6 +753,22 @@ body {
 /* Weekend list card */
 .weekend-card {
   flex-grow: 1;
+  border: 1px solid rgba(128, 0, 32, 0.45) !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), 0 0 20px rgba(128, 0, 32, 0.15) !important;
+  position: relative;
+  overflow: hidden;
+}
+
+.weekend-card::after {
+  content: '';
+  position: absolute;
+  top: -50px;
+  right: -50px;
+  width: 150px;
+  height: 150px;
+  background: radial-gradient(circle, rgba(128, 0, 32, 0.25) 0%, transparent 70%);
+  z-index: 0;
+  pointer-events: none;
 }
 
 .weekend-card .subtitle {
@@ -998,8 +1016,8 @@ body {
   right: 0;
   bottom: 0;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(0, 245, 212, 0.8) 0%, rgba(157, 78, 221, 0.4) 50%, transparent 100%);
-  box-shadow: 0 0 40px rgba(0, 245, 212, 0.5), 0 0 80px rgba(157, 78, 221, 0.3);
+  background: radial-gradient(circle, rgba(128, 0, 32, 0.85) 0%, rgba(253, 250, 242, 0.35) 60%, transparent 100%);
+  box-shadow: 0 0 40px rgba(128, 0, 32, 0.6), 0 0 80px rgba(253, 250, 242, 0.2);
   animation: orbWave 4s ease-in-out infinite alternate;
 }
 
@@ -1010,8 +1028,8 @@ body {
   right: 15px;
   bottom: 15px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(255, 0, 127, 0.9) 0%, rgba(58, 134, 200, 0.4) 60%, transparent 100%);
-  box-shadow: 0 0 30px rgba(255, 0, 127, 0.6);
+  background: radial-gradient(circle, rgba(253, 250, 242, 0.8) 0%, rgba(128, 0, 32, 0.4) 60%, transparent 100%);
+  box-shadow: 0 0 30px rgba(253, 250, 242, 0.45);
   animation: orbPulse 3s ease-in-out infinite alternate-reverse;
 }
 
@@ -1028,17 +1046,29 @@ body {
 
 /* CarPlay orb voice modes */
 .carplay-wrapper.listening .glowing-orb {
-  background: radial-gradient(circle, rgba(0, 245, 212, 0.9) 0%, rgba(255, 255, 255, 0.3) 40%, rgba(157, 78, 221, 0.6) 70%, transparent 100%);
-  animation: orbListening 0.5s ease-in-out infinite alternate;
+  background: radial-gradient(circle, rgba(0, 245, 212, 0.95) 0%, rgba(20, 184, 166, 0.5) 60%, transparent 100%);
+  box-shadow: 0 0 50px rgba(0, 245, 212, 0.8), 0 0 90px rgba(20, 184, 166, 0.4);
+  animation: orbListening 0.4s ease-in-out infinite alternate;
 }
 
-.carplay-wrapper.speaking .glowing-orb-inner {
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.9) 0%, rgba(255, 0, 127, 0.8) 50%, transparent 100%);
+.carplay-wrapper.listening .glowing-orb-inner {
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.9) 0%, rgba(0, 245, 212, 0.45) 60%, transparent 100%);
+  box-shadow: 0 0 35px rgba(0, 245, 212, 0.75);
+}
+
+.carplay-wrapper.speaking .glowing-orb {
+  background: radial-gradient(circle, rgba(255, 0, 127, 0.9) 0%, rgba(217, 70, 239, 0.5) 60%, transparent 100%);
+  box-shadow: 0 0 50px rgba(255, 0, 127, 0.8), 0 0 90px rgba(217, 70, 239, 0.4);
   animation: orbSpeaking 0.3s ease-in-out infinite alternate;
 }
 
+.carplay-wrapper.speaking .glowing-orb-inner {
+  background: radial-gradient(circle, rgba(253, 250, 242, 0.95) 0%, rgba(255, 0, 127, 0.5) 60%, transparent 100%);
+  box-shadow: 0 0 35px rgba(255, 0, 127, 0.7);
+}
+
 @keyframes orbWave {
-  0% { transform: scale(1) rotate(0deg); opacity: 0.8; }
+  0% { transform: scale(1) rotate(0deg); opacity: 0.85; }
   100% { transform: scale(1.15) rotate(180deg); opacity: 1; }
 }
 
@@ -1052,13 +1082,14 @@ body {
 }
 
 @keyframes orbListening {
-  0% { transform: scale(1); box-shadow: 0 0 50px rgba(0, 245, 212, 0.8); }
-  100% { transform: scale(1.3); box-shadow: 0 0 70px rgba(157, 78, 221, 0.9); }
+  0% { transform: scale(1) translate(0, 0); box-shadow: 0 0 40px rgba(0, 245, 212, 0.75); }
+  50% { transform: scale(1.2) translate(-3px, 2px); box-shadow: 0 0 60px rgba(20, 184, 166, 0.85); }
+  100% { transform: scale(1.3) translate(3px, -2px); box-shadow: 0 0 50px rgba(0, 245, 212, 0.95); }
 }
 
 @keyframes orbSpeaking {
-  0% { transform: scale(0.95); }
-  100% { transform: scale(1.2); }
+  0% { transform: scale(0.95); opacity: 0.9; }
+  100% { transform: scale(1.35); opacity: 1; }
 }
 
 .carplay-status-text {
@@ -1771,6 +1802,22 @@ body {
 .eyes-free-carplay .carplay-quick-actions {
   grid-template-columns: 1fr !important;
   gap: 15px;
+}
+
+/* Freezing scrolling and dimming text interactions under Driving Mode to prevent driver distraction */
+body.eyes-free .task-list,
+body.eyes-free #brain-index-list {
+  max-height: 250px !important;
+  overflow: hidden !important;
+  pointer-events: none !important;
+  opacity: 0.65;
+}
+
+body.eyes-free .search-bar,
+body.eyes-free .chat-input-wrapper,
+body.eyes-free .add-quick-task {
+  pointer-events: none !important;
+  opacity: 0.4 !important;
 }
 
 .eyes-free-carplay .carplay-quick-actions button:not(#cp-act-briefing):not(#carplay-mic-trigger) {

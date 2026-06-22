@@ -1,0 +1,16 @@
+{
+  "name": "omnimind-backend",
+  "version": "2.0.0",
+  "description": "Stateful containerized backend for OmniMind v2.0",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "cors": "^2.8.5",
+    "firebase-admin": "^12.1.0",
+    "@google-cloud/logging": "^11.2.0"
+  }
+}
