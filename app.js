@@ -455,6 +455,125 @@ function escapeHtml(text) {
     .replace(/'/g, "&#039;");
 }
 
+// Service Account Client-Side OAuth Token Exchange helpers using Web Crypto API
+function base64UrlEncode(str) {
+  const base64 = btoa(unescape(encodeURIComponent(str)));
+  return base64.replace(/=/g, "").replace(/\+/g, "-").replace(/\//g, "_");
+}
+
+function arrayBufferToBase64Url(buffer) {
+  let binary = "";
+  const bytes = new Uint8Array(buffer);
+  for (let i = 0; i < bytes.byteLength; i++) {
+    binary += String.fromCharCode(bytes[i]);
+  }
+  return btoa(binary).replace(/=/g, "").replace(/\+/g, "-").replace(/\//g, "_");
+}
+
+function base64ToArrayBuffer(base64) {
+  const binaryString = atob(base64);
+  const len = binaryString.length;
+  const bytes = new Uint8Array(len);
+  for (let i = 0; i < len; i++) {
+    bytes[i] = binaryString.charCodeAt(i);
+  }
+  return bytes.buffer;
+}
+
+function pemToDer(pem) {
+  const rawPem = pem
+    .replace(/-----BEGIN PRIVATE KEY-----/, "")
+    .replace(/-----END PRIVATE KEY-----/, "")
+    .replace(/\s+/g, "");
+  return base64ToArrayBuffer(rawPem);
+}
+
+async function importPrivateKey(pemKey) {
+  const derBuffer = pemToDer(pemKey);
+  return await window.crypto.subtle.importKey(
+    "pkcs8",
+    derBuffer,
+    {
+      name: "RSASSA-PKCS1-v1_5",
+      hash: { name: "SHA-256" }
+    },
+    false,
+    ["sign"]
+  );
+}
+
+async function createServiceAccountJwt(serviceAccount) {
+  const header = {
+    alg: "RS256",
+    typ: "JWT"
+  };
+  const now = Math.floor(Date.now() / 1000);
+  const payload = {
+    iss: serviceAccount.client_email,
+    scope: "https://www.googleapis.com/auth/cloud-platform",
+    aud: serviceAccount.token_uri || "https://oauth2.googleapis.com/token",
+    exp: now + 3600,
+    iat: now
+  };
+  const encodedHeader = base64UrlEncode(JSON.stringify(header));
+  const encodedPayload = base64UrlEncode(JSON.stringify(payload));
+  const tokenInput = `${encodedHeader}.${encodedPayload}`;
+  
+  const privateKey = await importPrivateKey(serviceAccount.private_key);
+  const encoder = new TextEncoder();
+  const data = encoder.encode(tokenInput);
+  
+  const signature = await window.crypto.subtle.sign(
+    "RSASSA-PKCS1-v1_5",
+    privateKey,
+    data
+  );
+  const encodedSignature = arrayBufferToBase64Url(signature);
+  return `${tokenInput}.${encodedSignature}`;
+}
+
+async function getVertexAccessToken(serviceAccount) {
+  if (!serviceAccount || !serviceAccount.private_key || !serviceAccount.client_email) {
+    throw new Error("Invalid service account JSON structure. Please verify private_key and client_email properties.");
+  }
+  
+  const cachedToken = sessionStorage.getItem("vertex_oauth_token");
+  const cachedExpiry = sessionStorage.getItem("vertex_oauth_expiry");
+  
+  if (cachedToken && cachedExpiry) {
+    const expiryTime = parseInt(cachedExpiry);
+    if (Date.now() < expiryTime - 300000) {
+      console.log("[VERTEX OAUTH]: Using cached access token.");
+      return cachedToken;
+    }
+  }
+  
+  console.log("[VERTEX OAUTH]: Generating new OAuth token from Service Account key...");
+  const jwt = await createServiceAccountJwt(serviceAccount);
+  const response = await fetch(serviceAccount.token_uri || "https://oauth2.googleapis.com/token", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded"
+    },
+    body: `grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer&assertion=${jwt}`
+  });
+  
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`Failed to exchange JWT for access token: ${errorText}`);
+  }
+  
+  const data = await response.json();
+  if (data.access_token) {
+    const expiryTimestamp = Date.now() + (data.expires_in || 3600) * 1000;
+    sessionStorage.setItem("vertex_oauth_token", data.access_token);
+    sessionStorage.setItem("vertex_oauth_expiry", expiryTimestamp.toString());
+    return data.access_token;
+  } else {
+    throw new Error("No access_token returned in Google OAuth response.");
+  }
+}
+
 function getFormattedChatHistoryForGemini() {
   const formatted = [];
   let lastRole = null;
@@ -658,12 +777,20 @@ Rules:
       });
     }
 
-    const url = OMNIMIND_LLM_CONFIG.endpoint;
+    let url = OMNIMIND_LLM_CONFIG.endpoint;
     const headers = {
       "Content-Type": "application/json"
     };
 
-    if (OMNIMIND_LLM_CONFIG.provider === "Vertex AI" && OMNIMIND_LLM_CONFIG.authMethod === "bearer") {
+    if (OMNIMIND_LLM_CONFIG.provider === "Vertex AI" && OMNIMIND_LLM_CONFIG.authMethod === "serviceAccount" && OMNIMIND_LLM_CONFIG.serviceAccount) {
+      // Automatically swap {PROJECT_ID} or {YOUR_PROJECT_ID} in the endpoint URL from the service account JSON
+      const projectId = OMNIMIND_LLM_CONFIG.serviceAccount.project_id;
+      if (projectId) {
+        url = url.replace("{PROJECT_ID}", projectId).replace("{YOUR_PROJECT_ID}", projectId);
+      }
+      const token = await getVertexAccessToken(OMNIMIND_LLM_CONFIG.serviceAccount);
+      headers["Authorization"] = `Bearer ${token}`;
+    } else if (OMNIMIND_LLM_CONFIG.provider === "Vertex AI" && OMNIMIND_LLM_CONFIG.authMethod === "bearer") {
       headers["Authorization"] = `Bearer ${OMNIMIND_LLM_CONFIG.apiKey}`;
     } else {
       headers["X-goog-api-key"] = OMNIMIND_LLM_CONFIG.apiKey;
@@ -783,7 +910,30 @@ Rules:
 // Local Fallback Parser when API is offline/unavailable
 function handleUserInputLocalFallback(text) {
   const normalized = text.toLowerCase();
+  const cleanInput = normalized.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?]/g, "").trim();
   let reply = "";
+
+  // 0. Greeting Handler (Local conversational fallback)
+  const greetings = ["hi", "hello", "hey", "good morning", "good afternoon", "good evening", "namaste", "sat sri akal", "satsriakal", "hola"];
+  const isGreeting = greetings.some(g => cleanInput === g || cleanInput.startsWith(g + " "));
+  if (isGreeting) {
+    if (state.activeLanguage.startsWith("hi")) {
+      reply = "नमस्ते! मैं आपकी क्या सहायता कर सकता हूँ?";
+    } else if (state.activeLanguage.startsWith("pa")) {
+      reply = "ਸਤਿ ਸ੍ਰੀ ਅਕਾਲ! ਮੈਂ ਤੁਹਾਡੀ ਕੀ ਮਦਦ ਕਰ ਸਕਦਾ ਹਾਂ?";
+    } else {
+      reply = "Hello Mohit! How can I help you today?";
+    }
+    
+    setTimeout(() => {
+      addChatMessage("bot", reply);
+      speakText(reply);
+      if (carplayWrapper && (carplayWrapper.classList.contains("listening") || carplayWrapper.classList.contains("speaking"))) {
+        carplayPrompt.textContent = reply;
+      }
+    }, 500);
+    return;
+  }
 
   // 1. Voice Mode Switches
   if (normalized.includes("mode") || normalized.includes("driving") || normalized.includes("working") || normalized.includes("snooze") || normalized.includes("playing") || normalized.includes("cooking") || normalized.includes("free")) {
@@ -1103,24 +1253,15 @@ function handleUserInputLocalFallback(text) {
     }
   }
 
-  // Fallback Rule: General Notes
+  // Fallback Rule: Tell the user Gemini API is offline/error instead of saving raw text as a task
   else {
-    const newItem = createOmniItem({
-      type: "todo",
-      title: text.length > 45 ? text.substring(0, 45) + "..." : text,
-      content: text,
-      category: "General Tasks",
-      topic: "Unstructured Notes",
-      item_priority: 3,
-      category_priority: 3,
-      date_due: null,
-      mode_restrictions: []
-    });
-
-    state.brainIndex.unshift(newItem);
-    state.weekendTasks.unshift(newItem);
-
-    reply = "I've saved that information in your brain index as a general task and indexed it.";
+    if (state.activeLanguage.startsWith("hi")) {
+      reply = "क्षमा करें, मैं इस निर्देश को समझ नहीं सका। जेमिनी एआई प्रोसेसर अभी अनुपलब्ध है (HTTP 403)।";
+    } else if (state.activeLanguage.startsWith("pa")) {
+      reply = "ਮਾਫ਼ ਕਰਨਾ, ਮੈਂ ਇਸ ਨਿਰਦੇਸ਼ ਨੂੰ ਸਮਝ ਨਹੀਂ ਸਕਿਆ। ਜੇਮਿਨੀ ਏਆਈ ਪ੍ਰੋਸੈਸਰ ਇਸ ਵੇਲੇ ਉਪਲਬਧ ਨਹੀਂ ਹੈ (HTTP 403)।";
+    } else {
+      reply = "Sorry, I couldn't process that command. The Gemini AI processor is currently offline (HTTP 403).";
+    }
   }
 
   saveState();
