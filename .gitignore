@@ -1,0 +1,8 @@
+.antigravity-ide/
+.gemini/
+.vscode/
+node_modules/
+config.js
+*.log
+Thumbs.db
+.DS_Store
