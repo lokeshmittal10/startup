@@ -1,11 +1,7 @@
 // OmniMind - Core Application Logic
 
 // Live Production Ingestion Configuration
-const OMNIMIND_LLM_CONFIG = window.OMNIMIND_LLM_CONFIG || {
-  provider: "Google Gemini",
-  endpoint: "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent",
-  apiKey: "" // Loaded dynamically from local config.js (excluded from git)
-};
+const OMNIMIND_LLM_CONFIG = window.OMNIMIND_LLM_CONFIG;
 
 // Resetting Seeding Data to a Clean Slate
 const initialBrainIndex = [];
