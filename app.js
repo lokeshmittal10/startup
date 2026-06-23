@@ -1,7 +1,7 @@
 // OmniMind - Core Application Logic
 
 // Live Production Ingestion Configuration
-const OMNIMIND_LLM_CONFIG = window.OMNIMIND_LLM_CONFIG;
+// Removed config.js references, transitioning to built-in window.ai integrated solution
 
 // Resetting Seeding Data to a Clean Slate
 const initialBrainIndex = [];
@@ -491,125 +491,6 @@ function escapeHtml(text) {
     .replace(/'/g, "&#039;");
 }
 
-// Service Account Client-Side OAuth Token Exchange helpers using Web Crypto API
-function base64UrlEncode(str) {
-  const base64 = btoa(unescape(encodeURIComponent(str)));
-  return base64.replace(/=/g, "").replace(/\+/g, "-").replace(/\//g, "_");
-}
-
-function arrayBufferToBase64Url(buffer) {
-  let binary = "";
-  const bytes = new Uint8Array(buffer);
-  for (let i = 0; i < bytes.byteLength; i++) {
-    binary += String.fromCharCode(bytes[i]);
-  }
-  return btoa(binary).replace(/=/g, "").replace(/\+/g, "-").replace(/\//g, "_");
-}
-
-function base64ToArrayBuffer(base64) {
-  const binaryString = atob(base64);
-  const len = binaryString.length;
-  const bytes = new Uint8Array(len);
-  for (let i = 0; i < len; i++) {
-    bytes[i] = binaryString.charCodeAt(i);
-  }
-  return bytes.buffer;
-}
-
-function pemToDer(pem) {
-  const rawPem = pem
-    .replace(/-----BEGIN PRIVATE KEY-----/, "")
-    .replace(/-----END PRIVATE KEY-----/, "")
-    .replace(/\\n/g, "")
-    .replace(/\s+/g, "");
-  return base64ToArrayBuffer(rawPem);
-}
-
-async function importPrivateKey(pemKey) {
-  const derBuffer = pemToDer(pemKey);
-  return await window.crypto.subtle.importKey(
-    "pkcs8",
-    derBuffer,
-    {
-      name: "RSASSA-PKCS1-v1_5",
-      hash: { name: "SHA-256" }
-    },
-    false,
-    ["sign"]
-  );
-}
-
-async function createServiceAccountJwt(serviceAccount) {
-  const header = {
-    alg: "RS256",
-    typ: "JWT"
-  };
-  const now = Math.floor(Date.now() / 1000);
-  const payload = {
-    iss: serviceAccount.client_email,
-    scope: "https://www.googleapis.com/auth/cloud-platform",
-    aud: serviceAccount.token_uri || "https://oauth2.googleapis.com/token",
-    exp: now + 3600,
-    iat: now
-  };
-  const encodedHeader = base64UrlEncode(JSON.stringify(header));
-  const encodedPayload = base64UrlEncode(JSON.stringify(payload));
-  const tokenInput = `${encodedHeader}.${encodedPayload}`;
-
-  const privateKey = await importPrivateKey(serviceAccount.private_key);
-  const encoder = new TextEncoder();
-  const data = encoder.encode(tokenInput);
-
-  const signature = await window.crypto.subtle.sign(
-    "RSASSA-PKCS1-v1_5",
-    privateKey,
-    data
-  );
-  const encodedSignature = arrayBufferToBase64Url(signature);
-  return `${tokenInput}.${encodedSignature}`;
-}
-
-async function getVertexAccessToken(serviceAccount) {
-  if (!serviceAccount || !serviceAccount.private_key || !serviceAccount.client_email) {
-    throw new Error("Invalid service account JSON structure. Please verify private_key and client_email properties.");
-  }
-
-  const cachedToken = sessionStorage.getItem("vertex_oauth_token");
-  const cachedExpiry = sessionStorage.getItem("vertex_oauth_expiry");
-
-  if (cachedToken && cachedExpiry) {
-    const expiryTime = parseInt(cachedExpiry);
-    if (Date.now() < expiryTime - 300000) {
-      console.log("[VERTEX OAUTH]: Using cached access token.");
-      return cachedToken;
-    }
-  }
-
-  console.log("[VERTEX OAUTH]: Generating new OAuth token from Service Account key...");
-  const jwt = await createServiceAccountJwt(serviceAccount);
-  const response = await fetch(serviceAccount.token_uri || "https://oauth2.googleapis.com/token", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded"
-    },
-    body: `grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer&assertion=${jwt}`
-  });
-
-  if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(`Failed to exchange JWT for access token: ${errorText}`);
-  }
-
-  const data = await response.json();
-  if (data.access_token) {
-    const expiryTimestamp = Date.now() + (data.expires_in || 3600) * 1000;
-    sessionStorage.setItem("vertex_oauth_token", data.access_token);
-    sessionStorage.setItem("vertex_oauth_expiry", expiryTimestamp.toString());
-    return data.access_token;
-  } else {
-    throw new Error("No access_token returned in Google OAuth response.");
-  }
-}
 
 function getFormattedChatHistoryForGemini() {
   const formatted = [];
@@ -818,40 +699,28 @@ Rules:
       });
     }
 
-    let url = OMNIMIND_LLM_CONFIG.endpoint;
-    const headers = {
-      "Content-Type": "application/json"
-    };
-
-    if (OMNIMIND_LLM_CONFIG.provider === "Vertex AI" && OMNIMIND_LLM_CONFIG.authMethod === "serviceAccount" && OMNIMIND_LLM_CONFIG.serviceAccount) {
-      // Automatically swap {PROJECT_ID} or {YOUR_PROJECT_ID} in the endpoint URL from the service account JSON
-      const projectId = OMNIMIND_LLM_CONFIG.serviceAccount.project_id;
-      if (projectId) {
-        url = url.replace("{PROJECT_ID}", projectId).replace("{YOUR_PROJECT_ID}", projectId);
+    let responseText = "";
+    if (window.ai && window.ai.languageModel) {
+      const capabilities = await window.ai.languageModel.capabilities();
+      if (capabilities.available !== "no") {
+        const session = await window.ai.languageModel.create({
+          systemPrompt: systemPrompt
+        });
+        const historyText = formattedHistory.map(turn => {
+          const roleName = turn.role === "user" ? "User" : "Model";
+          return `${roleName}: ${turn.parts[0].text}`;
+        }).join("\n");
+        responseText = await session.prompt(`${historyText}\nUser: ${text}`);
+        session.destroy();
+      } else {
+        throw new Error("Chrome built-in Gemini Nano model is not ready or available.");
       }
-      const token = await getVertexAccessToken(OMNIMIND_LLM_CONFIG.serviceAccount);
-      headers["Authorization"] = `Bearer ${ token } `;
-    } else if (OMNIMIND_LLM_CONFIG.provider === "Vertex AI" && OMNIMIND_LLM_CONFIG.authMethod === "bearer") {
-      headers["Authorization"] = `Bearer ${ OMNIMIND_LLM_CONFIG.apiKey } `;
     } else {
-      headers["X-goog-api-key"] = OMNIMIND_LLM_CONFIG.apiKey;
+      throw new Error("window.ai.languageModel is not supported in this browser.");
     }
 
-    const response = await fetch(url, {
-      method: "POST",
-      headers: headers,
-      body: JSON.stringify({
-        contents: formattedHistory
-      })
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${ response.status } `);
-    }
-
-    const data = await response.json();
-    if (data.candidates && data.candidates[0].content.parts[0].text) {
-      let rawText = data.candidates[0].content.parts[0].text.trim();
+    if (responseText) {
+      let rawText = responseText.trim();
       if (rawText.startsWith("```")) {
     rawText = rawText.replace(/^```json\s*/i, "").replace(/```$/, "").trim();
   }
