@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,20 +8,26 @@
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet">
   <!-- Stylesheet -->
   <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
   <div class="app-container">
-    
+
     <!-- Sidebar Navigation -->
     <aside class="sidebar">
       <div class="brand">
         <div class="brand-icon">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 2a10 10 0 0 0-3.23 19.46c.1.08.15.26.15.46v1.17c0 .5.33.91.82.91h4.52c.49 0 .82-.41.82-.91v-1.17c0-.2.05-.38.15-.46A10 10 0 0 0 12 2zm3.77 14.54c-.3.26-.5.64-.5.98V18h-4.54v-.48c0-.34-.2-.72-.5-1-.93-.83-1.63-2.14-1.63-3.52 0-2.82 2.18-5 5.1-5s5.1 2.18 5.1 5c0 1.38-.7 2.69-1.63 3.54z"/>
-            <path d="M12 6a1 1 0 0 1 1 1v1.5a1 1 0 0 1-2 0V7a1 1 0 0 1 1-1zm3.83 2.17a1 1 0 0 1 0 1.41l-1.06 1.06a1 1 0 1 1-1.41-1.41l1.06-1.06a1 1 0 0 1 1.41 0zM8.17 8.17a1 1 0 0 1 1.41 0l1.06 1.06a1 1 0 1 1-1.41 1.41L8.17 9.58a1 1 0 0 1 0-1.41z" opacity="0.6"/>
+            <path
+              d="M12 2a10 10 0 0 0-3.23 19.46c.1.08.15.26.15.46v1.17c0 .5.33.91.82.91h4.52c.49 0 .82-.41.82-.91v-1.17c0-.2.05-.38.15-.46A10 10 0 0 0 12 2zm3.77 14.54c-.3.26-.5.64-.5.98V18h-4.54v-.48c0-.34-.2-.72-.5-1-.93-.83-1.63-2.14-1.63-3.52 0-2.82 2.18-5 5.1-5s5.1 2.18 5.1 5c0 1.38-.7 2.69-1.63 3.54z" />
+            <path
+              d="M12 6a1 1 0 0 1 1 1v1.5a1 1 0 0 1-2 0V7a1 1 0 0 1 1-1zm3.83 2.17a1 1 0 0 1 0 1.41l-1.06 1.06a1 1 0 1 1-1.41-1.41l1.06-1.06a1 1 0 0 1 1.41 0zM8.17 8.17a1 1 0 0 1 1.41 0l1.06 1.06a1 1 0 1 1-1.41 1.41L8.17 9.58a1 1 0 0 1 0-1.41z"
+              opacity="0.6" />
           </svg>
         </div>
         <div class="brand-details">
@@ -31,19 +38,30 @@
 
       <nav class="nav-links">
         <button class="nav-item active" data-tab="dashboard">
-          <svg class="icon" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+          <svg class="icon" viewBox="0 0 24 24">
+            <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" />
+          </svg>
           Dashboard
         </button>
         <button class="nav-item" data-tab="carplay">
-          <svg class="icon" viewBox="0 0 24 24"><path d="M17 1.01L7 1c-1.1 0-2 .9-2 2v18c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V3c0-1.1-.9-1.99-2-1.99zM17 19H7V5h10v14zM16 6H8v2h8V6zm-8 4h8v2H8v-2zm8 4H8v2h8v-2z"/></svg>
+          <svg class="icon" viewBox="0 0 24 24">
+            <path
+              d="M17 1.01L7 1c-1.1 0-2 .9-2 2v18c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V3c0-1.1-.9-1.99-2-1.99zM17 19H7V5h10v14zM16 6H8v2h8V6zm-8 4h8v2H8v-2zm8 4H8v2h8v-2z" />
+          </svg>
           CarPlay Console
         </button>
         <button class="nav-item" data-tab="index">
-          <svg class="icon" viewBox="0 0 24 24"><path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0-2-.9-2-2V4c0-1.1-.9-2-2-2zm0 14H8V4h12v12z"/></svg>
+          <svg class="icon" viewBox="0 0 24 24">
+            <path
+              d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0-2-.9-2-2V4c0-1.1-.9-2-2-2zm0 14H8V4h12v12z" />
+          </svg>
           Brain Index
         </button>
         <button class="nav-item" data-tab="sync">
-          <svg class="icon" viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+          <svg class="icon" viewBox="0 0 24 24">
+            <path
+              d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z" />
+          </svg>
           Feed Sync
         </button>
       </nav>
@@ -61,7 +79,7 @@
 
     <!-- Main Content Area -->
     <main class="main-content">
-      
+
       <!-- Top header bar -->
       <header class="app-header">
         <div class="header-left">
@@ -71,7 +89,8 @@
         <div class="header-right">
           <div class="language-selector-wrapper" style="display: flex; align-items: center; gap: 8px;">
             <label for="current-lang-select" style="font-size: 13px; color: var(--text-secondary);">Lang:</label>
-            <select id="current-lang-select" class="mode-select" style="background: rgba(22, 17, 43, 0.7); border: 1px solid var(--panel-border); border-radius: 10px; color: #fff; padding: 6px 12px; font-family: var(--font-family); font-size: 13px; outline: none; cursor: pointer; transition: var(--transition);">
+            <select id="current-lang-select" class="mode-select"
+              style="background: rgba(22, 17, 43, 0.7); border: 1px solid var(--panel-border); border-radius: 10px; color: #fff; padding: 6px 12px; font-family: var(--font-family); font-size: 13px; outline: none; cursor: pointer; transition: var(--transition);">
               <option value="en-US" selected>🇺🇸 English (US)</option>
               <option value="en-IN">🇮🇳 English (IN)</option>
               <option value="hi-IN">🇮🇳 Hindi (हिंदी)</option>
@@ -80,7 +99,8 @@
           </div>
           <div class="mode-selector-wrapper" style="display: flex; align-items: center; gap: 8px;">
             <label for="current-mode-select" style="font-size: 13px; color: var(--text-secondary);">Mode:</label>
-            <select id="current-mode-select" class="mode-select" style="background: rgba(22, 17, 43, 0.7); border: 1px solid var(--panel-border); border-radius: 10px; color: #fff; padding: 6px 12px; font-family: var(--font-family); font-size: 13px; outline: none; cursor: pointer; transition: var(--transition);">
+            <select id="current-mode-select" class="mode-select"
+              style="background: rgba(22, 17, 43, 0.7); border: 1px solid var(--panel-border); border-radius: 10px; color: #fff; padding: 6px 12px; font-family: var(--font-family); font-size: 13px; outline: none; cursor: pointer; transition: var(--transition);">
               <option value="Free" selected>🟢 Free</option>
               <option value="Work">💼 Work</option>
               <option value="Driving">🚗 Driving</option>
@@ -95,22 +115,31 @@
           </div>
           <div class="briefing-settings-wrapper" style="display: flex; align-items: center; gap: 8px;">
             <label for="briefing-n-input" style="font-size: 13px; color: var(--text-secondary);">Briefing (N):</label>
-            <input type="number" id="briefing-n-input" min="1" max="5" value="3" style="width: 48px; background: rgba(22, 17, 43, 0.7); border: 1px solid var(--panel-border); border-radius: 10px; color: #fff; padding: 6px; text-align: center; font-family: var(--font-family); font-size: 13px; outline: none;">
+            <input type="number" id="briefing-n-input" min="1" max="5" value="3"
+              style="width: 48px; background: rgba(22, 17, 43, 0.7); border: 1px solid var(--panel-border); border-radius: 10px; color: #fff; padding: 6px; text-align: center; font-family: var(--font-family); font-size: 13px; outline: none;">
           </div>
-          <button id="reset-brain-btn" style="background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 10px; color: #ff5c5c; padding: 6px 12px; font-family: var(--font-family); font-size: 13px; outline: none; cursor: pointer; transition: var(--transition);">🧹 Reset Brain</button>
+          <button id="reset-brain-btn"
+            style="background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 10px; color: #ff5c5c; padding: 6px 12px; font-family: var(--font-family); font-size: 13px; outline: none; cursor: pointer; transition: var(--transition);">🧹
+            Reset Brain</button>
           <div class="search-bar">
-            <svg class="icon search-icon" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+            <svg class="icon search-icon" viewBox="0 0 24 24">
+              <path
+                d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" />
+            </svg>
             <input type="text" id="global-search" placeholder="Search your brain...">
           </div>
           <button class="voice-trigger-btn" id="carplay-toggle-btn">
-            <svg class="icon" viewBox="0 0 24 24"><path d="M12 14c1.66 0 2.99-1.34 2.99-3L15 5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.48 6-3.3 6-6.72h-1.7z"/></svg>
+            <svg class="icon" viewBox="0 0 24 24">
+              <path
+                d="M12 14c1.66 0 2.99-1.34 2.99-3L15 5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.48 6-3.3 6-6.72h-1.7z" />
+            </svg>
             CarPlay Mode
           </button>
         </div>
       </header>
 
       <!-- Active View Containers -->
-      
+
       <!-- TAB 1: DASHBOARD -->
       <section class="tab-panel active" id="panel-dashboard">
         <!-- Top Proactive Alerts Banner -->
@@ -125,7 +154,8 @@
               <div class="alert-icon">✈️</div>
               <div class="alert-content">
                 <h4>Upcoming Family Trip Checklist</h4>
-                <p>Based on your last trip, you forgot to pack medicals. Don't forget kids' prescription and allergy kit!</p>
+                <p>Based on your last trip, you forgot to pack medicals. Don't forget kids' prescription and allergy
+                  kit!</p>
               </div>
               <button class="alert-action-btn">View Checklist</button>
             </div>
@@ -142,7 +172,7 @@
 
         <!-- Dashboard Layout Grid: Hero-first priority list layout -->
         <div class="dashboard-grid">
-          
+
           <!-- Column 1: Weekend Action List & Analytics (Hero Chores View) -->
           <div class="card-column">
             <!-- Weekend Planner Card -->
@@ -181,19 +211,30 @@
                 <h3>Analytics & Efficiency</h3>
               </div>
               <div class="card-body">
-                <div class="analytics-row" style="display: flex; gap: 20px; align-items: center; justify-content: space-between;">
+                <div class="analytics-row"
+                  style="display: flex; gap: 20px; align-items: center; justify-content: space-between;">
                   <!-- Circular Gauge for Efficiency -->
-                  <div class="analytics-gauge-box" style="display: flex; flex-direction: column; align-items: center; gap: 8px; width: 100px; flex-shrink: 0;">
-                    <svg viewBox="0 0 100 100" class="gauge-svg" style="width: 80px; height: 80px; transform: rotate(-90deg);">
-                      <circle cx="50" cy="50" r="40" class="gauge-bg" style="fill: none; stroke: rgba(255,255,255,0.05); stroke-width: 8;"></circle>
-                      <circle cx="50" cy="50" r="40" class="gauge-fill" id="efficiency-gauge-fill" stroke-dasharray="251.2" stroke-dashoffset="251.2" style="fill: none; stroke: var(--accent-cyan); stroke-width: 8; stroke-linecap: round; transition: stroke-dashoffset 0.5s ease;"></circle>
-                      <text x="50" y="-45" class="gauge-text" id="efficiency-gauge-text" style="fill: #fff; font-size: 18px; font-weight: 700; text-anchor: middle; transform: rotate(90deg);" dominant-baseline="middle">0%</text>
+                  <div class="analytics-gauge-box"
+                    style="display: flex; flex-direction: column; align-items: center; gap: 8px; width: 100px; flex-shrink: 0;">
+                    <svg viewBox="0 0 100 100" class="gauge-svg"
+                      style="width: 80px; height: 80px; transform: rotate(-90deg);">
+                      <circle cx="50" cy="50" r="40" class="gauge-bg"
+                        style="fill: none; stroke: rgba(255,255,255,0.05); stroke-width: 8;"></circle>
+                      <circle cx="50" cy="50" r="40" class="gauge-fill" id="efficiency-gauge-fill"
+                        stroke-dasharray="251.2" stroke-dashoffset="251.2"
+                        style="fill: none; stroke: var(--accent-cyan); stroke-width: 8; stroke-linecap: round; transition: stroke-dashoffset 0.5s ease;">
+                      </circle>
+                      <text x="50" y="-45" class="gauge-text" id="efficiency-gauge-text"
+                        style="fill: #fff; font-size: 18px; font-weight: 700; text-anchor: middle; transform: rotate(90deg);"
+                        dominant-baseline="middle">0%</text>
                     </svg>
-                    <span class="analytics-label" style="font-size: 11px; color: var(--text-secondary); text-align: center;">Efficiency</span>
+                    <span class="analytics-label"
+                      style="font-size: 11px; color: var(--text-secondary); text-align: center;">Efficiency</span>
                   </div>
 
                   <!-- Stats grid summary -->
-                  <div class="stats-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; flex-grow: 1;">
+                  <div class="stats-grid"
+                    style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; flex-grow: 1;">
                     <div class="stat-item" id="stat-trips-box" style="padding: 8px;">
                       <span class="stat-num" id="stat-trips" style="font-size: 18px; font-weight: 700;">1</span>
                       <span class="stat-label" style="font-size: 10px;">Trips</span>
@@ -215,8 +256,11 @@
 
                 <!-- 7-day Burndown rate SVG Chart -->
                 <div class="burndown-chart-wrapper" style="margin-top: 20px;">
-                  <span class="analytics-label" style="display: block; margin-bottom: 8px; font-size: 12px; color: var(--text-secondary); font-weight: 600;">7-Day Task Burndown (Injected vs Completed)</span>
-                  <div class="burndown-chart-container" style="background: rgba(0,0,0,0.15); border-radius: 10px; padding: 10px; border: 1px solid rgba(255,255,255,0.03);">
+                  <span class="analytics-label"
+                    style="display: block; margin-bottom: 8px; font-size: 12px; color: var(--text-secondary); font-weight: 600;">7-Day
+                    Task Burndown (Injected vs Completed)</span>
+                  <div class="burndown-chart-container"
+                    style="background: rgba(0,0,0,0.15); border-radius: 10px; padding: 10px; border: 1px solid rgba(255,255,255,0.03);">
                     <svg id="burndown-svg" viewBox="0 0 280 120" style="width: 100%; height: 120px; overflow: visible;">
                       <!-- Chart elements dynamically injected -->
                     </svg>
@@ -224,9 +268,13 @@
                 </div>
 
                 <!-- Recurrent Lifecycle Schedule -->
-                <div class="lifecycle-tracker-wrapper" style="margin-top: 15px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 12px;">
-                  <span class="analytics-label" style="font-size: 12px; color: var(--text-secondary); font-weight: 600; display: block; margin-bottom: 8px;">Upcoming Birthdays & Events</span>
-                  <ul class="lifecycle-list" id="lifecycle-events-list" style="list-style: none; display: flex; flex-direction: column; gap: 8px;">
+                <div class="lifecycle-tracker-wrapper"
+                  style="margin-top: 15px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 12px;">
+                  <span class="analytics-label"
+                    style="font-size: 12px; color: var(--text-secondary); font-weight: 600; display: block; margin-bottom: 8px;">Upcoming
+                    Birthdays & Events</span>
+                  <ul class="lifecycle-list" id="lifecycle-events-list"
+                    style="list-style: none; display: flex; flex-direction: column; gap: 8px;">
                     <!-- Birthdays / Appointments loaded here -->
                   </ul>
                 </div>
@@ -248,12 +296,13 @@
                 </button>
               </div>
             </div>
-            
+
             <div class="chat-messages" id="chat-messages-container">
               <div class="msg bot">
                 <div class="msg-avatar">🤖</div>
                 <div class="msg-bubble">
-                  Hello Mohit. I am monitoring your context. You can type or speak to add items, ask about upcoming tasks, or log notes. How can I help you today?
+                  Hello Mohit. I am monitoring your context. You can type or speak to add items, ask about upcoming
+                  tasks, or log notes. How can I help you today?
                 </div>
               </div>
             </div>
@@ -261,26 +310,42 @@
             <div class="chat-input-wrapper">
               <!-- Custom Sight attachment button dropdown -->
               <div class="sight-dropdown-container" style="position: relative; display: flex; align-items: center;">
-                <button class="mic-btn" id="chat-sight-btn" title="Ingest Sight media" style="margin-left: 6px; width: 34px; height: 34px; background: transparent; border: none; cursor: pointer; color: var(--text-secondary);">
+                <button class="mic-btn" id="chat-sight-btn" title="Ingest Sight media"
+                  style="margin-left: 6px; width: 34px; height: 34px; background: transparent; border: none; cursor: pointer; color: var(--text-secondary);">
                   📸
                 </button>
-                <div class="sight-dropdown-menu" id="sight-dropdown-menu" style="display: none; position: absolute; bottom: 45px; left: 0; background: rgba(10, 8, 22, 0.95); border: 1px solid var(--panel-border); border-radius: 12px; padding: 6px; width: 180px; z-index: 100; box-shadow: 0 4px 20px rgba(0,0,0,0.5); backdrop-filter: blur(10px);">
-                  <button class="sight-dropdown-item" data-image="bill" style="display: flex; align-items: center; gap: 8px; width: 100%; padding: 8px 10px; background: transparent; border: none; color: #fff; text-align: left; font-size: 12.5px; cursor: pointer; border-radius: 6px; font-family: var(--font-family);">🧾 Ingest Energy Bill</button>
-                  <button class="sight-dropdown-item" data-image="wall" style="display: flex; align-items: center; gap: 8px; width: 100%; padding: 8px 10px; background: transparent; border: none; color: #fff; text-align: left; font-size: 12.5px; cursor: pointer; border-radius: 6px; font-family: var(--font-family);">🧱 Ingest Drywall Crack</button>
-                  <button class="sight-dropdown-item" data-image="flight" style="display: flex; align-items: center; gap: 8px; width: 100%; padding: 8px 10px; background: transparent; border: none; color: #fff; text-align: left; font-size: 12.5px; cursor: pointer; border-radius: 6px; font-family: var(--font-family);">✈️ Ingest Flight Ticket</button>
+                <div class="sight-dropdown-menu" id="sight-dropdown-menu"
+                  style="display: none; position: absolute; bottom: 45px; left: 0; background: rgba(10, 8, 22, 0.95); border: 1px solid var(--panel-border); border-radius: 12px; padding: 6px; width: 180px; z-index: 100; box-shadow: 0 4px 20px rgba(0,0,0,0.5); backdrop-filter: blur(10px);">
+                  <button class="sight-dropdown-item" data-image="bill"
+                    style="display: flex; align-items: center; gap: 8px; width: 100%; padding: 8px 10px; background: transparent; border: none; color: #fff; text-align: left; font-size: 12.5px; cursor: pointer; border-radius: 6px; font-family: var(--font-family);">🧾
+                    Ingest Energy Bill</button>
+                  <button class="sight-dropdown-item" data-image="wall"
+                    style="display: flex; align-items: center; gap: 8px; width: 100%; padding: 8px 10px; background: transparent; border: none; color: #fff; text-align: left; font-size: 12.5px; cursor: pointer; border-radius: 6px; font-family: var(--font-family);">🧱
+                    Ingest Drywall Crack</button>
+                  <button class="sight-dropdown-item" data-image="flight"
+                    style="display: flex; align-items: center; gap: 8px; width: 100%; padding: 8px 10px; background: transparent; border: none; color: #fff; text-align: left; font-size: 12.5px; cursor: pointer; border-radius: 6px; font-family: var(--font-family);">✈️
+                    Ingest Flight Ticket</button>
                   <div style="border-top: 1px solid rgba(255,255,255,0.06); margin: 4px 0;"></div>
-                  <button class="sight-dropdown-item" data-image="upload" style="display: flex; align-items: center; gap: 8px; width: 100%; padding: 8px 10px; background: transparent; border: none; color: var(--text-secondary); text-align: left; font-size: 12.5px; cursor: pointer; border-radius: 6px; font-family: var(--font-family);">📁 Upload custom...</button>
+                  <button class="sight-dropdown-item" data-image="upload"
+                    style="display: flex; align-items: center; gap: 8px; width: 100%; padding: 8px 10px; background: transparent; border: none; color: var(--text-secondary); text-align: left; font-size: 12.5px; cursor: pointer; border-radius: 6px; font-family: var(--font-family);">📁
+                    Upload custom...</button>
                 </div>
               </div>
               <input type="text" id="chat-input" placeholder="Ask anything, log complaints, or plan trips...">
               <button class="mic-btn" id="mic-trigger" title="Speak to Omni">
-                <svg viewBox="0 0 24 24"><path d="M12 14c1.66 0 2.99-1.34 2.99-3L15 5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.48 6-3.3 6-6.72h-1.7z" fill="currentColor"/></svg>
+                <svg viewBox="0 0 24 24">
+                  <path
+                    d="M12 14c1.66 0 2.99-1.34 2.99-3L15 5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.48 6-3.3 6-6.72h-1.7z"
+                    fill="currentColor" />
+                </svg>
               </button>
               <button class="send-btn" id="send-trigger">
-                <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" fill="currentColor"/></svg>
+                <svg viewBox="0 0 24 24">
+                  <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" fill="currentColor" />
+                </svg>
               </button>
             </div>
-            
+
             <!-- Voice wave overlay when listening -->
             <div class="listening-overlay" id="listening-overlay">
               <div class="waveform">
@@ -309,25 +374,25 @@
               📶 🔋 🔊
             </div>
           </div>
-          
+
           <div class="carplay-body">
             <div class="carplay-left-nav">
               <button class="carplay-app-btn active" title="Voice assistant">🎙️</button>
               <button class="carplay-app-btn" title="Map">🗺️</button>
               <button class="carplay-app-btn" title="Music">🎵</button>
             </div>
-            
+
             <div class="carplay-main">
               <div class="carplay-voice-orb-container" id="carplay-orb-container">
                 <div class="glowing-orb" id="carplay-orb"></div>
                 <div class="glowing-orb-inner"></div>
                 <div class="carplay-orb-glow"></div>
               </div>
-              
+
               <div class="carplay-status-text" id="carplay-status">
                 Say "Hey Omni" or tap below to talk
               </div>
-              
+
               <div class="carplay-prompt-display" id="carplay-prompt">
                 "What can I do for you on the road?"
               </div>
@@ -335,14 +400,20 @@
               <div class="carplay-quick-actions">
                 <button class="carplay-action" id="cp-act-briefing">🎙️ Play Agenda Briefing</button>
                 <button class="cp-mic-btn" id="carplay-mic-trigger">
-                  <svg viewBox="0 0 24 24"><path d="M12 14c1.66 0 2.99-1.34 2.99-3L15 5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.48 6-3.3 6-6.72h-1.7z" fill="currentColor"/></svg>
+                  <svg viewBox="0 0 24 24">
+                    <path
+                      d="M12 14c1.66 0 2.99-1.34 2.99-3L15 5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.48 6-3.3 6-6.72h-1.7z"
+                      fill="currentColor" />
+                  </svg>
                 </button>
                 <button class="carplay-action" id="cp-act-complaint">🛠️ Read Builder Tasks</button>
               </div>
-              
+
               <!-- CarPlay Mode Switcher (Simulating dashboard control) -->
               <div style="margin-top: 15px; display: flex; justify-content: center;">
-                <button id="cp-driving-mode-btn" class="carplay-action" style="padding: 6px 16px; font-size: 12px; background: rgba(239, 68, 68, 0.2); border-color: rgba(239, 68, 68, 0.4);">Toggle Driving Mode</button>
+                <button id="cp-driving-mode-btn" class="carplay-action"
+                  style="padding: 6px 16px; font-size: 12px; background: rgba(239, 68, 68, 0.2); border-color: rgba(239, 68, 68, 0.4);">Toggle
+                  Driving Mode</button>
               </div>
             </div>
           </div>
@@ -380,10 +451,12 @@
         <div class="card sync-card">
           <div class="card-header">
             <h3>Simulated Data Feeds</h3>
-            <p class="subtitle">Simulate automated scanning of emails, text messages, or notes to populate your assistant's context.</p>
+            <p class="subtitle">Simulate automated scanning of emails, text messages, or notes to populate your
+              assistant's context.</p>
           </div>
           <div class="card-body">
-            <div class="feed-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
+            <div class="feed-grid"
+              style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
               <!-- Sync Input -->
               <div class="sync-input-panel">
                 <h4>Paste External Feed Item</h4>
@@ -392,31 +465,47 @@
                   <button class="template-btn" data-template="solar">☀️ Solar Install Text</button>
                   <button class="template-btn" data-template="complaints">🏠 Wife's Complaint List</button>
                 </div>
-                <textarea id="sync-textarea" placeholder="Paste email content, text messages, or raw lists here..."></textarea>
+                <textarea id="sync-textarea"
+                  placeholder="Paste email content, text messages, or raw lists here..."></textarea>
                 <button class="sync-action-btn" id="run-sync-btn">Scan and Ingest into Brain</button>
               </div>
 
               <!-- Sight Ingestion Panel -->
               <div class="sync-input-panel sight-ingestion-panel" style="display: flex; flex-direction: column;">
                 <h4>Sight Interface (Image Ingestion v1.0)</h4>
-                <p class="subtitle" style="font-size: 12px; margin-bottom: 12px; color: var(--text-secondary);">Select a mock context photo or upload an image to simulate OCR extraction & auto-drafting.</p>
-                <div class="template-selector" id="image-templates-container" style="margin-bottom: 12px; display: flex; gap: 8px; flex-wrap: wrap;">
-                  <button class="template-btn image-template-btn" data-image="bill" style="padding: 6px 10px; font-size: 11px;">🧾 Energy Bill</button>
-                  <button class="template-btn image-template-btn" data-image="wall" style="padding: 6px 10px; font-size: 11px;">🧱 Drywall Crack</button>
-                  <button class="template-btn image-template-btn" data-image="flight" style="padding: 6px 10px; font-size: 11px;">✈️ Flight Booking</button>
+                <p class="subtitle" style="font-size: 12px; margin-bottom: 12px; color: var(--text-secondary);">Select a
+                  mock context photo or upload an image to simulate OCR extraction & auto-drafting.</p>
+                <div class="template-selector" id="image-templates-container"
+                  style="margin-bottom: 12px; display: flex; gap: 8px; flex-wrap: wrap;">
+                  <button class="template-btn image-template-btn" data-image="bill"
+                    style="padding: 6px 10px; font-size: 11px;">🧾 Energy Bill</button>
+                  <button class="template-btn image-template-btn" data-image="wall"
+                    style="padding: 6px 10px; font-size: 11px;">🧱 Drywall Crack</button>
+                  <button class="template-btn image-template-btn" data-image="flight"
+                    style="padding: 6px 10px; font-size: 11px;">✈️ Flight Booking</button>
                 </div>
-                <div class="image-drag-drop-zone" id="image-drag-zone" style="height: 110px; border: 2px dashed rgba(255,255,255,0.15); border-radius: 10px; display: flex; align-items: center; justify-content: center; text-align: center; cursor: pointer; position: relative; transition: var(--transition); background: rgba(0,0,0,0.1); flex-grow: 1;">
-                  <div class="drag-zone-content" id="drag-zone-content" style="display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 10px;">
+                <div class="image-drag-drop-zone" id="image-drag-zone"
+                  style="height: 110px; border: 2px dashed rgba(255,255,255,0.15); border-radius: 10px; display: flex; align-items: center; justify-content: center; text-align: center; cursor: pointer; position: relative; transition: var(--transition); background: rgba(0,0,0,0.1); flex-grow: 1;">
+                  <div class="drag-zone-content" id="drag-zone-content"
+                    style="display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 10px;">
                     <span class="upload-icon" style="font-size: 24px;">📸</span>
-                    <span style="font-size: 12px; color: var(--text-secondary);">Drag & drop image here or click to upload</span>
+                    <span style="font-size: 12px; color: var(--text-secondary);">Drag & drop image here or click to
+                      upload</span>
                   </div>
                   <!-- Scanning overlay -->
-                  <div class="ocr-scanning-overlay" id="ocr-scanning-overlay" style="display: none; position: absolute; top:0; left:0; width:100%; height:100%; background: rgba(10,8,22,0.9); border-radius: 10px; flex-direction: column; align-items: center; justify-content: center; gap: 10px; z-index: 5;">
-                    <div class="scanning-line" style="position: absolute; width: 100%; height: 3px; background: var(--accent-cyan); top: 0; box-shadow: 0 0 10px var(--accent-cyan); animation: scan 1.5s infinite linear;"></div>
-                    <div class="ocr-progress-bar-container" style="width: 70%; height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden;">
-                      <div class="ocr-progress-bar" id="ocr-progress-bar" style="width: 0%; height: 100%; background: linear-gradient(90deg, var(--primary), var(--accent-cyan)); transition: width 0.1s linear;"></div>
+                  <div class="ocr-scanning-overlay" id="ocr-scanning-overlay"
+                    style="display: none; position: absolute; top:0; left:0; width:100%; height:100%; background: rgba(10,8,22,0.9); border-radius: 10px; flex-direction: column; align-items: center; justify-content: center; gap: 10px; z-index: 5;">
+                    <div class="scanning-line"
+                      style="position: absolute; width: 100%; height: 3px; background: var(--accent-cyan); top: 0; box-shadow: 0 0 10px var(--accent-cyan); animation: scan 1.5s infinite linear;">
                     </div>
-                    <span id="ocr-status-text" style="font-size: 11px; color: var(--text-secondary);">Initializing OCR Ingestion...</span>
+                    <div class="ocr-progress-bar-container"
+                      style="width: 70%; height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden;">
+                      <div class="ocr-progress-bar" id="ocr-progress-bar"
+                        style="width: 0%; height: 100%; background: linear-gradient(90deg, var(--primary), var(--accent-cyan)); transition: width 0.1s linear;">
+                      </div>
+                    </div>
+                    <span id="ocr-status-text" style="font-size: 11px; color: var(--text-secondary);">Initializing OCR
+                      Ingestion...</span>
                   </div>
                 </div>
                 <input type="file" id="image-file-input" style="display: none;" accept="image/*">
@@ -438,7 +527,7 @@
   </div>
 
   <!-- Interactive Modals -->
-  
+
   <!-- 1. Trip Essentials Checklist Modal -->
   <div class="modal-overlay" id="modal-trip-checklist">
     <div class="modal-card">
@@ -500,7 +589,7 @@
       </div>
       <div class="modal-body">
         <p class="subtitle">Enter figures from your energy bill to check solar credits activation.</p>
-        
+
         <div class="form-row">
           <div class="form-group">
             <label>Solar Generation (kWh)</label>
@@ -528,6 +617,8 @@
     </div>
   </div>
 
+  <script src="config.js"></script>
   <script src="app.js"></script>
 </body>
+
 </html>

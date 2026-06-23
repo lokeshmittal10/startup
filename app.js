@@ -1,7 +1,10 @@
 // OmniMind - Core Application Logic
 
 // Live Production Ingestion Configuration
-// Removed config.js references, transitioning to built-in window.ai integrated solution
+const OMNIMIND_LLM_CONFIG = window.OMNIMIND_LLM_CONFIG || {
+  provider: "Vertex AI",
+  endpoint: "https://us-central1-aiplatform.googleapis.com/v1/projects/gen-lang-client-0963866277/locations/us-central1/publishers/google/models/gemini-2.5-flash:generateContent"
+};
 
 // Resetting Seeding Data to a Clean Slate
 const initialBrainIndex = [];
@@ -491,6 +494,36 @@ function escapeHtml(text) {
     .replace(/'/g, "&#039;");
 }
 
+async function getVertexAccessToken() {
+  const cachedToken = sessionStorage.getItem("vertex_oauth_token");
+  const cachedExpiry = sessionStorage.getItem("vertex_oauth_expiry");
+
+  if (cachedToken && cachedExpiry) {
+    const expiryTime = parseInt(cachedExpiry);
+    if (Date.now() < expiryTime - 300000) {
+      console.log("[VERTEX OAUTH]: Using cached access token.");
+      return cachedToken;
+    }
+  }
+
+  console.log("[VERTEX OAUTH]: Fetching access token from GCE Express backend `/api/vertex-token`...");
+  const response = await fetch(`${API_BASE}/api/vertex-token`);
+  if (!response.ok) {
+    const errText = await response.text();
+    throw new Error(`Failed to retrieve token from server: ${errText}`);
+  }
+
+  const data = await response.json();
+  if (data.token) {
+    const expiresSec = data.expires || 3600;
+    const expiryTimestamp = Date.now() + expiresSec * 1000;
+    sessionStorage.setItem("vertex_oauth_token", data.token);
+    sessionStorage.setItem("vertex_oauth_expiry", expiryTimestamp.toString());
+    return data.token;
+  } else {
+    throw new Error("No access token returned from GCE backend.");
+  }
+}
 
 function getFormattedChatHistoryForGemini() {
   const formatted = [];
@@ -699,28 +732,34 @@ Rules:
       });
     }
 
-    let responseText = "";
-    if (window.ai && window.ai.languageModel) {
-      const capabilities = await window.ai.languageModel.capabilities();
-      if (capabilities.available !== "no") {
-        const session = await window.ai.languageModel.create({
-          systemPrompt: systemPrompt
-        });
-        const historyText = formattedHistory.map(turn => {
-          const roleName = turn.role === "user" ? "User" : "Model";
-          return `${roleName}: ${turn.parts[0].text}`;
-        }).join("\n");
-        responseText = await session.prompt(`${historyText}\nUser: ${text}`);
-        session.destroy();
-      } else {
-        throw new Error("Chrome built-in Gemini Nano model is not ready or available.");
-      }
+    let url = OMNIMIND_LLM_CONFIG.endpoint;
+    const headers = {
+      "Content-Type": "application/json"
+    };
+
+      const token = await getVertexAccessToken();
+      headers["Authorization"] = `Bearer ${ token } `;
+    } else if (OMNIMIND_LLM_CONFIG.provider === "Vertex AI" && OMNIMIND_LLM_CONFIG.authMethod === "bearer") {
+      headers["Authorization"] = `Bearer ${ OMNIMIND_LLM_CONFIG.apiKey } `;
     } else {
-      throw new Error("window.ai.languageModel is not supported in this browser.");
+      headers["X-goog-api-key"] = OMNIMIND_LLM_CONFIG.apiKey;
     }
 
-    if (responseText) {
-      let rawText = responseText.trim();
+    const response = await fetch(url, {
+      method: "POST",
+      headers: headers,
+      body: JSON.stringify({
+        contents: formattedHistory
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${ response.status } `);
+    }
+
+    const data = await response.json();
+    if (data.candidates && data.candidates[0].content.parts[0].text) {
+      let rawText = data.candidates[0].content.parts[0].text.trim();
       if (rawText.startsWith("```")) {
     rawText = rawText.replace(/^```json\s*/i, "").replace(/```$/, "").trim();
   }
