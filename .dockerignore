@@ -1,7 +1,0 @@
-node_modules
-npm-debug.log
-tasks_db.json
-.git
-.gitignore
-Dockerfile
-.dockerignore

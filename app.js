@@ -554,11 +554,11 @@ async function createServiceAccountJwt(serviceAccount) {
   const encodedHeader = base64UrlEncode(JSON.stringify(header));
   const encodedPayload = base64UrlEncode(JSON.stringify(payload));
   const tokenInput = `${encodedHeader}.${encodedPayload}`;
-  
+
   const privateKey = await importPrivateKey(serviceAccount.private_key);
   const encoder = new TextEncoder();
   const data = encoder.encode(tokenInput);
-  
+
   const signature = await window.crypto.subtle.sign(
     "RSASSA-PKCS1-v1_5",
     privateKey,
@@ -572,10 +572,10 @@ async function getVertexAccessToken(serviceAccount) {
   if (!serviceAccount || !serviceAccount.private_key || !serviceAccount.client_email) {
     throw new Error("Invalid service account JSON structure. Please verify private_key and client_email properties.");
   }
-  
+
   const cachedToken = sessionStorage.getItem("vertex_oauth_token");
   const cachedExpiry = sessionStorage.getItem("vertex_oauth_expiry");
-  
+
   if (cachedToken && cachedExpiry) {
     const expiryTime = parseInt(cachedExpiry);
     if (Date.now() < expiryTime - 300000) {
@@ -583,7 +583,7 @@ async function getVertexAccessToken(serviceAccount) {
       return cachedToken;
     }
   }
-  
+
   console.log("[VERTEX OAUTH]: Generating new OAuth token from Service Account key...");
   const jwt = await createServiceAccountJwt(serviceAccount);
   const response = await fetch(serviceAccount.token_uri || "https://oauth2.googleapis.com/token", {
@@ -593,12 +593,12 @@ async function getVertexAccessToken(serviceAccount) {
     },
     body: `grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer&assertion=${jwt}`
   });
-  
+
   if (!response.ok) {
     const errorText = await response.text();
     throw new Error(`Failed to exchange JWT for access token: ${errorText}`);
   }
-  
+
   const data = await response.json();
   if (data.access_token) {
     const expiryTimestamp = Date.now() + (data.expires_in || 3600) * 1000;
@@ -794,7 +794,7 @@ Rules:
   * For DELETE, match English ("delete", "remove"), Hindi ("हटाओ"), and Punjabi ("ਹਟਾ ਦਿਓ", "ਹਟਾਓ").
 - For UPDATE or DELETE, set "task.title" to a substring of the title of the task from the list above that best matches the user's request.
 - For CHAT: If the user searches for tasks, you can answer the query in the "reply" string.
-- Provide ONLY raw JSON. No markdown backticks (no ```json), no comments. Must be valid, parseable minified JSON.`;
+- Provide ONLY raw JSON. No markdown backticks (no ```json), no comments.Must be valid, parseable minified JSON.`;
 
     const formattedHistory = getFormattedChatHistoryForGemini();
 
@@ -803,17 +803,17 @@ Rules:
     if (formattedHistory.length > 0) {
       const lastTurn = formattedHistory[formattedHistory.length - 1];
       if (lastTurn.role === "user") {
-        lastTurn.parts[0].text = `${systemPrompt}\n\nUser Input: ${text}`;
+        lastTurn.parts[0].text = `${ systemPrompt } \n\nUser Input: ${ text } `;
       } else {
         formattedHistory.push({
           role: "user",
-          parts: [{ text: `${systemPrompt}\n\nUser Input: ${text}` }]
+          parts: [{ text: `${ systemPrompt } \n\nUser Input: ${ text } ` }]
         });
       }
     } else {
       formattedHistory.push({
         role: "user",
-        parts: [{ text: `${systemPrompt}\n\nUser Input: ${text}` }]
+        parts: [{ text: `${ systemPrompt } \n\nUser Input: ${ text } ` }]
       });
     }
 
@@ -829,9 +829,9 @@ Rules:
         url = url.replace("{PROJECT_ID}", projectId).replace("{YOUR_PROJECT_ID}", projectId);
       }
       const token = await getVertexAccessToken(OMNIMIND_LLM_CONFIG.serviceAccount);
-      headers["Authorization"] = `Bearer ${token}`;
+      headers["Authorization"] = `Bearer ${ token } `;
     } else if (OMNIMIND_LLM_CONFIG.provider === "Vertex AI" && OMNIMIND_LLM_CONFIG.authMethod === "bearer") {
-      headers["Authorization"] = `Bearer ${OMNIMIND_LLM_CONFIG.apiKey}`;
+      headers["Authorization"] = `Bearer ${ OMNIMIND_LLM_CONFIG.apiKey } `;
     } else {
       headers["X-goog-api-key"] = OMNIMIND_LLM_CONFIG.apiKey;
     }
@@ -845,106 +845,106 @@ Rules:
     });
 
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      throw new Error(`HTTP error! status: ${ response.status } `);
     }
 
     const data = await response.json();
     if (data.candidates && data.candidates[0].content.parts[0].text) {
       let rawText = data.candidates[0].content.parts[0].text.trim();
       if (rawText.startsWith("```")) {
-        rawText = rawText.replace(/^```json\s*/i, "").replace(/```$/, "").trim();
-      }
+    rawText = rawText.replace(/^```json\s*/i, "").replace(/```$/, "").trim();
+  }
 
       const res = JSON.parse(rawText);
-      console.log("[GEMINI INGESTION DECISION]:", res);
+  console.log("[GEMINI INGESTION DECISION]:", res);
 
-      if (res.action === "CREATE" && res.task && res.task.title) {
-        const newTask = createOmniItem({
-          type: "todo",
-          title: res.task.title,
-          content: res.task.content || "Voice-ingested task.",
-          category: res.task.category || "General Tasks",
-          topic: res.task.topic || "General",
-          item_priority: res.task.item_priority || 3,
-          category_priority: res.task.category_priority || 3,
-          date_due: res.task.date_due || null,
-          mode_restrictions: res.task.mode_restrictions || []
-        });
-        state.brainIndex.unshift(newTask);
-        state.weekendTasks.unshift(newTask);
-        saveState();
-        renderAll();
-        reply = res.reply || `Created task "${res.task.title}".`;
-      }
-      else if (res.action === "MODE_SWITCH" && res.mode) {
-        updateActiveMode(res.mode);
-        reply = res.reply || `Switched mode to ${res.mode}.`;
-      }
-      else if (res.action === "READ") {
-        runCarPlayBriefing();
-        return;
-      }
-      else if (res.action === "UPDATE" && res.task && res.task.title) {
-        const task = findTaskByTitle(res.task.title);
-        if (task) {
-          if (res.update_field === "item_priority" && res.update_value) {
-            let priorityVal = parseInt(res.update_value);
-            if (!isNaN(priorityVal)) {
-              task.item_priority = priorityVal;
-            }
-            reply = res.reply || `Updated priority of "${task.title}" to ${res.update_value}.`;
-          } else if (res.update_field === "mode_restrictions" && res.update_value) {
-            if (!task.mode_restrictions) task.mode_restrictions = [];
-            if (!task.mode_restrictions.includes(res.update_value)) {
-              task.mode_restrictions.push(res.update_value);
-            }
-            reply = res.reply || `Moved "${task.title}" to ${res.update_value}.`;
-          } else if (res.update_field === "snooze") {
-            if (!task.mode_restrictions) task.mode_restrictions = [];
-            if (!task.mode_restrictions.includes("Snooze")) {
-              task.mode_restrictions.push("Snooze");
-            }
-            if (task.date_due) {
-              const d = new Date(task.date_due);
-              d.setDate(d.getDate() + 1);
-              task.date_due = d.toISOString().split('T')[0];
-            }
-            reply = res.reply || `Snoozed task "${task.title}".`;
-          }
-          saveState();
-          renderAll();
-        } else {
-          reply = `I couldn't find a task matching "${res.task.title}" to update.`;
+  if (res.action === "CREATE" && res.task && res.task.title) {
+    const newTask = createOmniItem({
+      type: "todo",
+      title: res.task.title,
+      content: res.task.content || "Voice-ingested task.",
+      category: res.task.category || "General Tasks",
+      topic: res.task.topic || "General",
+      item_priority: res.task.item_priority || 3,
+      category_priority: res.task.category_priority || 3,
+      date_due: res.task.date_due || null,
+      mode_restrictions: res.task.mode_restrictions || []
+    });
+    state.brainIndex.unshift(newTask);
+    state.weekendTasks.unshift(newTask);
+    saveState();
+    renderAll();
+    reply = res.reply || `Created task "${res.task.title}".`;
+  }
+  else if (res.action === "MODE_SWITCH" && res.mode) {
+    updateActiveMode(res.mode);
+    reply = res.reply || `Switched mode to ${res.mode}.`;
+  }
+  else if (res.action === "READ") {
+    runCarPlayBriefing();
+    return;
+  }
+  else if (res.action === "UPDATE" && res.task && res.task.title) {
+    const task = findTaskByTitle(res.task.title);
+    if (task) {
+      if (res.update_field === "item_priority" && res.update_value) {
+        let priorityVal = parseInt(res.update_value);
+        if (!isNaN(priorityVal)) {
+          task.item_priority = priorityVal;
         }
-      }
-      else if (res.action === "DELETE" && res.task && res.task.title) {
-        const task = findTaskByTitle(res.task.title);
-        if (task) {
-          state.pendingDeleteTask = task;
-          reply = res.reply || `Are you sure you want to delete "${task.title}"?`;
-        } else {
-          reply = `I couldn't find a task matching "${res.task.title}" to delete.`;
+        reply = res.reply || `Updated priority of "${task.title}" to ${res.update_value}.`;
+      } else if (res.update_field === "mode_restrictions" && res.update_value) {
+        if (!task.mode_restrictions) task.mode_restrictions = [];
+        if (!task.mode_restrictions.includes(res.update_value)) {
+          task.mode_restrictions.push(res.update_value);
         }
+        reply = res.reply || `Moved "${task.title}" to ${res.update_value}.`;
+      } else if (res.update_field === "snooze") {
+        if (!task.mode_restrictions) task.mode_restrictions = [];
+        if (!task.mode_restrictions.includes("Snooze")) {
+          task.mode_restrictions.push("Snooze");
+        }
+        if (task.date_due) {
+          const d = new Date(task.date_due);
+          d.setDate(d.getDate() + 1);
+          task.date_due = d.toISOString().split('T')[0];
+        }
+        reply = res.reply || `Snoozed task "${task.title}".`;
       }
-      else if (res.action === "CHAT") {
-        reply = res.reply || "I am not sure how to help with that request.";
-      }
-
       saveState();
       renderAll();
-
-      addChatMessage("bot", reply);
-      if (isVoice) speakText(reply);
-      if (carplayWrapper && (carplayWrapper.classList.contains("listening") || carplayWrapper.classList.contains("speaking"))) {
-        carplayPrompt.textContent = reply;
-      }
-      return;
+    } else {
+      reply = `I couldn't find a task matching "${res.task.title}" to update.`;
     }
-  } catch (err) {
-    console.warn("Gemini API ingestion failed, falling back to local deterministic parsing:", err);
-    addLog("Gemini API Offline/Error: " + err.message + ". Running local NLP fallback.", "warning");
-    handleUserInputLocalFallback(text, isVoice);
   }
+  else if (res.action === "DELETE" && res.task && res.task.title) {
+    const task = findTaskByTitle(res.task.title);
+    if (task) {
+      state.pendingDeleteTask = task;
+      reply = res.reply || `Are you sure you want to delete "${task.title}"?`;
+    } else {
+      reply = `I couldn't find a task matching "${res.task.title}" to delete.`;
+    }
+  }
+  else if (res.action === "CHAT") {
+    reply = res.reply || "I am not sure how to help with that request.";
+  }
+
+  saveState();
+  renderAll();
+
+  addChatMessage("bot", reply);
+  if (isVoice) speakText(reply);
+  if (carplayWrapper && (carplayWrapper.classList.contains("listening") || carplayWrapper.classList.contains("speaking"))) {
+    carplayPrompt.textContent = reply;
+  }
+  return;
+}
+  } catch (err) {
+  console.warn("Gemini API ingestion failed, falling back to local deterministic parsing:", err);
+  addLog("Gemini API Offline/Error: " + err.message + ". Running local NLP fallback.", "warning");
+  handleUserInputLocalFallback(text, isVoice);
+}
 }
 
 // Local Fallback Parser when API is offline/unavailable
@@ -964,7 +964,7 @@ function handleUserInputLocalFallback(text, isVoice = false) {
     } else {
       reply = "Hello Mohit! How can I help you today?";
     }
-    
+
     setTimeout(() => {
       addChatMessage("bot", reply);
       if (isVoice) speakText(reply);
@@ -2594,7 +2594,7 @@ window.createPainterTask = function () {
   speakText(botReply);
 };
 
-window.createTaskFromSearch = function(title) {
+window.createTaskFromSearch = function (title) {
   const meta = deduceCategoryAndTopic(title);
   const newTask = createOmniItem({
     type: "todo",
@@ -2625,7 +2625,7 @@ window.createTaskFromSearch = function(title) {
 
 function getCarpayTemplateMapping() {
   const activeTasks = getActiveFilteredTasks().filter(t => !t.completed);
-  
+
   const listItems = activeTasks.map(t => ({
     _type: "CPListItem",
     text: t.title,
@@ -2633,7 +2633,7 @@ function getCarpayTemplateMapping() {
     accessoryType: "disclosureIndicator",
     userInfo: { taskId: t.id }
   }));
-  
+
   const listTemplate = {
     _type: "CPListTemplate",
     title: "Weekend Action List",
@@ -2642,7 +2642,7 @@ function getCarpayTemplateMapping() {
       items: listItems
     }]
   };
-  
+
   return {
     listTemplate: listTemplate,
     getDetailTemplate: (task) => {
