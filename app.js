@@ -520,6 +520,7 @@ function pemToDer(pem) {
   const rawPem = pem
     .replace(/-----BEGIN PRIVATE KEY-----/, "")
     .replace(/-----END PRIVATE KEY-----/, "")
+    .replace(/\\n/g, "")
     .replace(/\s+/g, "");
   return base64ToArrayBuffer(rawPem);
 }
